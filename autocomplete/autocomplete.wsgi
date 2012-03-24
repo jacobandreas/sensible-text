@@ -27,7 +27,7 @@ def complete_google(context):
   return completions
 
 #lm = nltk.model.ngram
-austen_file = open('austen.txt')
+austen_file = open('/home/jacob/public_html/autocomplete.jacobandreas.net/autocomplete/austen.txt')
 austen_lines = '\n'.join(austen_file.readlines())
 austen_file.close()
 austen_toks = nltk.word_tokenize(austen_lines)
