@@ -15,7 +15,13 @@ def complete_google(context):
   r = requests.get(GOOGLE_URL % q)
   j = json.loads(r.text)
   #return [s[len(q):] for s in j[1]]
-  return [s for s in j[1] if not (s is ' '.join(context))]
+  completions = []
+  for s in j[1]:
+    if len(s.split()) <= len(context):
+      continue
+    completions.append('[' + s[len(q):] + ']')
+
+  return completions
 
 @app.route('/')
 def complete():
