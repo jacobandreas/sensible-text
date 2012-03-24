@@ -32,7 +32,9 @@ def complete():
 
   if len(completions) == 0:
     return ''
-  return random.sample(completions, 1)[0]
+  suggestion = random.sample(completions, 1)[0]
+  completion = suggestion[len(context):]
+  return completion
 
 application = app
 if __name__ == '__main__':
