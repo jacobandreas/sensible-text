@@ -33,7 +33,7 @@ def complete():
   if len(completions) == 0:
     return ''
   suggestion = random.sample(completions, 1)[0]
-  completion = suggestion[len(context):]
+  completion = suggestion[len(request.args.get('context')):]
   return completion
 
 application = app

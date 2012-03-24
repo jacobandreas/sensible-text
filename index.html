@@ -55,10 +55,11 @@
           if (ct === '') {
             return;
           }
+          alert('searching ' + ct);
           $.get('http://autocomplete.jacobandreas.net/autocomplete',
                 {'sources': 'google', 'context': ct},
                 function(data) {
-            alert(data);
+            alert('got ' + data);
           });
         }
       });
