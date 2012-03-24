@@ -16,9 +16,11 @@ def complete_google(context):
   j = json.loads(r.text)
   return j[1]
 
-@app.route('/complete')
+@app.route('/')
 def complete():
   # TODO validation
+  if not (request.args.get('context') and request.args.get('sources')):
+    return ''
 
   context = request.args.get('context').split()
   sources = request.args.get('sources').split(',')
@@ -32,5 +34,6 @@ def complete():
     return ''
   return random.sample(completions, 1)[0]
 
+application = app
 if __name__ == '__main__':
   app.run()
