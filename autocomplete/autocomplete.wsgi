@@ -19,7 +19,7 @@ def complete_google(context):
   for s in j[1]:
     if len(s.split()) <= len(context):
       continue
-    completion = s[len(q)]
+    completion = s[len(q):]
     if not completion[0] == ' ':
       continue
     completions.append(completion[1:])
