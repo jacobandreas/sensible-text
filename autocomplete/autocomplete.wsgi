@@ -14,7 +14,7 @@ def complete_google(context):
   q = '+'.join(context)
   r = requests.get(GOOGLE_URL % q)
   j = json.loads(r.text)
-  return j[1]
+  return [s[len(q):] for s in j[1]]
 
 @app.route('/')
 def complete():
@@ -32,8 +32,7 @@ def complete():
 
   if len(completions) == 0:
     return ''
-  suggestion = random.sample(completions, 1)[0]
-  completion = suggestion[len(request.args.get('context')):]
+  completion = random.sample(completions, 1)[0]
   return completion
 
 application = app

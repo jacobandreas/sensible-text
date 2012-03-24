@@ -49,17 +49,27 @@
         return match[0];
       }
 
+      var allowInsert = false;
       $('#text').keyup(function(evt) {
+        allowInsert = false;
         if (evt.which === 32) {
           var ct = getCurrentTrigram();
           if (ct === '') {
             return;
           }
-          alert('searching ' + ct);
+          allowInsert = true;
           $.get('http://autocomplete.jacobandreas.net/autocomplete',
                 {'sources': 'google', 'context': ct},
                 function(data) {
-            alert('got ' + data);
+            if (!allowInsert) {
+              return;
+            }
+            alert('ok');
+            var newnode = $('<span class="ac">' + data + '</span>')[0];
+            rangy.getSelection().getRangeAt(0).insertNode(newnode);
+            var newrange = rangy.createRange();
+            newrange.selectNode(newnode);
+            rangy.getSelection().setSingleRange(newrange);
           });
         }
       });
