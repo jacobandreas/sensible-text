@@ -32,6 +32,7 @@ austen_lines = '\n'.join(austen_file.readlines())
 austen_file.close()
 austen_toks = nltk.word_tokenize(austen_lines)
 austen_ngram = nltk.model.NgramModel(3, austen_toks)
+print('finished loading austen.txt')
 def complete_austen(context):
   completions = []
   for i in range(3):
@@ -54,7 +55,6 @@ def complete():
     completions += complete_google(context)
 
   if 'austen' in sources:
-    print "AUSTEN"
     completions += complete_austen(context)
 
   if len(completions) == 0:
