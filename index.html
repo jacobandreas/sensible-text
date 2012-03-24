@@ -49,27 +49,44 @@
         return match[0];
       }
 
-      var allowInsert = false;
+      function insertAtCursor(data) {
+        var rangeEnd = rangy.getSelection().getRangeAt(0).startOffset;
+        var before = $('#text').text().substring(0, rangeEnd);
+        var after = $('#text').text().substring(rangeEnd);
+        $('#text').text(before + data + after);
+        //var node = document.getElementById('text');
+        var node = $('#text').contents()[0];
+        var newrange = rangy.createRange();
+        newrange.setStart(node, before.length);
+        newrange.setEnd(node, before.length + data.length);
+        rangy.getSelection().setSingleRange(newrange);
+      }
+
+      var currentReq;
+      $('#text').keydown(function(evt) {
+        if (evt.which !== 8) {
+          var newrange = rangy.getSelection().collapseToEnd();
+        }
+      });
       $('#text').keyup(function(evt) {
-        allowInsert = false;
+        if (currentReq) {
+          currentReq.abort();
+          currentReq = null;
+        }
         if (evt.which === 32) {
           var ct = getCurrentTrigram();
           if (ct === '') {
             return;
           }
-          allowInsert = true;
-          $.get('http://autocomplete.jacobandreas.net/autocomplete',
+          currentReq = $.get('http://autocomplete.jacobandreas.net/autocomplete',
                 {'sources': 'google', 'context': ct},
                 function(data) {
-            if (!allowInsert) {
-              return;
-            }
-            alert('ok');
-            var newnode = $('<span class="ac">' + data + '</span>')[0];
-            rangy.getSelection().getRangeAt(0).insertNode(newnode);
-            var newrange = rangy.createRange();
-            newrange.selectNode(newnode);
-            rangy.getSelection().setSingleRange(newrange);
+            insertAtCursor(data);
+            // var newnode = $('<span class="ac">' + data + '</span>')[0];
+            // rangy.getSelection().getRangeAt(0).insertNode(newnode);
+            // var newrange = rangy.createRange();
+            // newrange.selectNode(newnode);
+            // rangy.getSelection().setSingleRange(newrange);
           });
         }
       });

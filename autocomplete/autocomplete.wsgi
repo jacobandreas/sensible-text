@@ -5,6 +5,7 @@ from flask import Flask, request
 import requests
 import random
 import json
+import nltk
 
 app = Flask(__name__)
 app.debug = True
@@ -23,7 +24,19 @@ def complete_google(context):
     if not completion[0] == ' ':
       continue
     completions.append(completion[1:])
+  return completions
 
+#lm = nltk.model.ngram
+austen_file = open('austen.txt')
+austen_lines = '\n'.join(austen_file.readlines())
+austen_file.close()
+austen_toks = nltk.word_tokenize(austen_lines)
+austen_ngram = nltk.model.NgramModel(3, austen_toks)
+def complete_austen(context):
+  completions = []
+  for i in range(3):
+    suggestion = austen_ngram.generate(3, context)
+    completions.append(' '.join(suggestion[len(context):]))
   return completions
 
 @app.route('/')
@@ -39,6 +52,10 @@ def complete():
 
   if 'google' in sources:
     completions += complete_google(context)
+
+  if 'austen' in sources:
+    print "AUSTEN"
+    completions += complete_austen(context)
 
   if len(completions) == 0:
     return ''
