@@ -1,13 +1,67 @@
 <!doctype HTML>
 <html>
   <head>
-</script>
-  <body>
+    <link href='http://fonts.googleapis.com/css?family=Pontano+Sans' 
+          rel='stylesheet' 
+          type='text/css'>
+    <style type='text/css'>
+      * {
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        background: #223;
+      }
+
+      #text {
+        font-family: 'Pontano Sans', sans-serif;
+        background: #28283f;
+        margin: 0 auto;
+        width: 30em;
+        padding: 5em 1em;
+        color: #ccc;
+        outline: 0px solid;
+      }
+    </style>
     <script type='text/javascript'
-      src='http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js'>
+            src='rangy-1.2.3/rangy-core.js'>
     </script>
+    <script type='text/javascript'
+            src='http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js'>
+    </script>
+  </head>
+  <body>
+
+    <div id='text' contenteditable='true'>
+    </div>  
+
     <script>
-      alert('hello')
+
+      function getCurrentTrigram() {
+        var rangeEnd = rangy.getSelection().getRangeAt(0).startOffset;
+        var searchString = $('#text').text().substring(0, rangeEnd);
+        var re = /(\w+\s){1,3}$/;
+        var match = re.exec(searchString); 
+        if (!match) {
+          return '';
+        }
+        return match[0];
+      }
+
+      $('#text').keyup(function(evt) {
+        if (evt.which === 32) {
+          var ct = getCurrentTrigram();
+          if (ct === '') {
+            return;
+          }
+          $.get('http://autocomplete.jacobandreas.net/autocomplete',
+                {'sources': 'google', 'context': ct},
+                function(data) {
+            alert(data);
+          });
+        }
+      });
     </script>
   </body>
 </html>
