@@ -14,7 +14,8 @@ def complete_google(context):
   q = '+'.join(context)
   r = requests.get(GOOGLE_URL % q)
   j = json.loads(r.text)
-  return [s[len(q):] for s in j[1]]
+  #return [s[len(q):] for s in j[1]]
+  return j[1]
 
 @app.route('/')
 def complete():
