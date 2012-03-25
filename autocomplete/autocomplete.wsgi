@@ -6,6 +6,7 @@ import requests
 import random
 import json
 import nltk
+import re
 
 app = Flask(__name__)
 app.debug = True
@@ -27,34 +28,76 @@ def complete_google(context):
   return completions
 
 #austen_file = open('/home/jacob/public_html/autocomplete.jacobandreas.net/autocomplete/austen.txt')
-#austen_lines = '\n'.join(austen_file.readlines())
-#austen_file.close()
-#austen_toks = nltk.word_tokenize(austen_lines)
-#austen_ngram = nltk.model.NgramModel(3, austen_toks)
-#print('finished loading austen.txt')
-#def complete_austen(context):
+austen_file = open('austen.txt')
+austen_lines = '\n'.join(austen_file.readlines())
+austen_file.close()
+austen_toks = nltk.word_tokenize(austen_lines)
+austen_ngram = nltk.model.NgramModel(3, austen_toks)
+print('finished loading austen.txt')
+def complete_austen(context):
+  completions = []
+  for i in range(3):
+    suggestion = austen_ngram.generate(1, context)
+    completions.append(' '.join(suggestion[len(context):]))
+  return completions
+
+#brown_toks = nltk.corpus.brown.words()
+#brown_ngram = nltk.model.NgramModel(3, brown_toks)
+#print('finished loading brown')
+#def complete_brown(context):
 #  completions = []
 #  for i in range(3):
-#    suggestion = austen_ngram.generate(3, context)
+#    suggestion = brown_ngram.generate(1, context)
 #    completions.append(' '.join(suggestion[len(context):]))
 #  return completions
 
+PARSELY_URL = 'http://simon.parsely.com:8983/solr/goldindex2/select/?wt=json&q=%s'
+def complete_parsely(context):
+  ncontext = [w for w in context if w[0].isupper()]
+  if not ncontext:
+    return []
+  q = '+'.join(ncontext)
+  r = requests.get(PARSELY_URL % q)
+  j = json.loads(r.text)
+  docs = j['response']['docs']
+  articles = [doc['full_content'] for doc in docs]
+  text = ' '.join(articles)
+  rexp = ' '.join(context) + r'((\s\w+){1,3})'
+  matches = re.findall(rexp, text)
+  return [m[0][1:] for m in matches]
+
+trigram_pool = list()
+def complete_stranger():
+  return ' '.join(random.sample(trigram_pool, min(len(trigram_pool), 3)))
+
 @app.route('/')
 def complete():
-  # TODO validation
+  global trigram_pool
   if not (request.args.get('context') and request.args.get('sources')):
     return ''
 
   context = request.args.get('context').split()
   sources = request.args.get('sources').split(',')
 
+  trigram_pool.append(context)
+  trigram_pool = trigram_pool[:15]
+
   completions = []
 
   if 'google' in sources:
     completions += complete_google(context)
 
-  #if 'austen' in sources:
-  #  completions += complete_austen(context)
+  if 'austen' in sources:
+    completions += complete_austen(context)
+
+  #if 'brown' in sources:
+  #  completions += complete_brown(context)
+
+  if 'parsely' in sources:
+    completions += complete_parsely(context)
+
+  if 'stranger' in sources:
+    completions += complete_stranger(context)
 
   if len(completions) == 0:
     return ''

@@ -12,16 +12,49 @@
 
       body {
         background: #223;
+        font-family: 'Pontano Sans', sans-serif;
+        color: #ccc;
       }
 
       #text {
-        font-family: 'Pontano Sans', sans-serif;
         background: #28283f;
         margin: 0 auto;
         width: 30em;
-        padding: 5em 1em;
-        color: #ccc;
+        padding: 5em 2em;
         outline: 0px solid;
+      }
+
+      #sources {
+        width: 7em;
+        margin: 0 auto;
+        height: 0;
+        position: relative;
+        left: -20em;
+        top: 5em;
+        list-style-type: none;
+        color: #889;
+      }
+
+      #spinner {
+        width: 7em;
+        margin: 0 auto;
+        height: 0;
+        position: relative;
+        left: 20em;
+        top: 6em;
+      }
+
+      #sources {
+        cursor: pointer;
+      }
+
+      #sources li.selected {
+        font-weight: bold;
+        color: #ccc;
+      }
+
+      input[type=checkbox] {
+        background: #f00;
       }
     </style>
     <script type='text/javascript'
@@ -30,13 +63,54 @@
     <script type='text/javascript'
             src='http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js'>
     </script>
+    <script type='text/javascript'
+            src='spin.min.js'>
+    </script>
   </head>
   <body>
+
+    <ul id='sources'>
+      <li id='google'>Google
+      <li id='austen'>Austen
+      <li id='brown'>Brown
+      <li id='parsely'>Parse.ly
+      <li id='strangers'>Strangers
+    </ul>
+
+    <div id='spinner'>
+    </div>
 
     <div id='text' contenteditable='true'>
     </div>  
 
     <script>
+
+      sources = ['google', 'austen', 'genesis', 'parsely']
+      selected_sources = []
+
+      function toggleSource(name) {
+        if (selected_sources.indexOf(name) == -1) {
+          selectSource(name);
+        } else {
+          unselectSource(name);
+        }
+      }
+
+      function selectSource(name) {
+        selected_sources.push(name);
+        $('#' + name).addClass('selected');
+      }
+
+      function unselectSource(name) {
+        selected_sources = $.grep(selected_sources, function(val) {
+          return val != name;
+        });
+        $('#' + name).removeClass('selected');
+      }
+
+      function getSourcesList() {
+        return selected_sources.join(',');
+      }
 
       function getCurrentTrigram() {
         var rangeEnd = rangy.getSelection().getRangeAt(0).startOffset;
@@ -64,7 +138,8 @@
 
       var currentReq;
       $('#text').keydown(function(evt) {
-        if (evt.which !== 8) {
+        if (evt.which === 32) {
+        //if (evt.which !== 8) {
           var newrange = rangy.getSelection().collapseToEnd();
         }
       });
@@ -78,10 +153,19 @@
           if (ct === '') {
             return;
           }
-          currentReq = $.get('http://autocomplete.jacobandreas.net/autocomplete',
-                {'sources': 'google', 'context': ct},
+          var mode;
+          if (ct[ct.length-1] == '.') {
+            mode = 'sentence';
+          } else {
+            mode = 'word';
+          }
+          //currentReq = $.get('http://autocomplete.jacobandreas.net/autocomplete',
+          $('#spinner').show()
+          currentReq = $.get('http://127.0.0.1:5000/',
+                {'sources': getSourcesList(), 'context': ct, 'mode': mode},
                 function(data) {
             insertAtCursor(data);
+            $('#spinner').hide()
             // var newnode = $('<span class="ac">' + data + '</span>')[0];
             // rangy.getSelection().getRangeAt(0).insertNode(newnode);
             // var newrange = rangy.createRange();
@@ -89,6 +173,36 @@
             // rangy.getSelection().setSingleRange(newrange);
           });
         }
+      });
+
+      $('#sources li').each(function() {
+        $(this).click(function() {
+          toggleSource(this.id);
+        });
+      });
+
+      $(document).ready(function() {
+        selectSource('google');
+
+        var opts = {
+          lines: 7, // The number of lines to draw
+          length: 0, // The length of each line
+          width: 4, // The line thickness
+          radius: 8, // The radius of the inner circle
+          rotate: 0, // The rotation offset
+          color: '#fff', // #rgb or #rrggbb
+          speed: 1.4, // Rounds per second
+          trail: 60, // Afterglow percentage
+          shadow: false, // Whether to render a shadow
+          hwaccel: false, // Whether to use hardware acceleration
+          className: 'spinner', // The CSS class to assign to the spinner
+          zIndex: 2e9, // The z-index (defaults to 2000000000)
+          top: 'auto', // Top position relative to parent in px
+          left: 'auto' // Left position relative to parent in px
+        };
+        var target = document.getElementById('spinner');
+        var spinner = new Spinner(opts).spin(target);
+        $('#spinner').hide();
       });
     </script>
   </body>
