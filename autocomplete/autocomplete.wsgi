@@ -68,7 +68,9 @@ def complete_parsely(context):
 
 trigram_pool = list()
 def complete_stranger():
-  return ' '.join(random.sample(trigram_pool, min(len(trigram_pool), 3)))
+  take = min(len(trigram_pool), 3)
+  samples = random.sample(trigram_pool, take)
+  return [' '.join(sample) for sample in samples]
 
 @app.route('/')
 def complete():
@@ -80,7 +82,7 @@ def complete():
   sources = request.args.get('sources').split(',')
 
   trigram_pool.append(context)
-  trigram_pool = trigram_pool[:15]
+  trigram_pool = trigram_pool[-15:]
 
   completions = []
 
@@ -96,8 +98,8 @@ def complete():
   if 'parsely' in sources:
     completions += complete_parsely(context)
 
-  if 'stranger' in sources:
-    completions += complete_stranger(context)
+  if 'strangers' in sources:
+    completions += complete_stranger()
 
   if len(completions) == 0:
     return ''
