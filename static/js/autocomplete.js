@@ -133,4 +133,5 @@ $(document).ready(function() {
   selectSource('google');
   setupEvents();
   setupSpinner();
+  $('#text').focus();
 });
