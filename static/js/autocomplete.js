@@ -1,6 +1,7 @@
 /* globals */
 var selected_sources = []
 var currentReq;
+var currentTimeout;
 var completions;
 var completionIndex;
 
@@ -67,29 +68,36 @@ function setupEvents() {
       currentReq.abort();
       currentReq = null;
       completions = null;
+      $('#spinner').hide();
+    }
+    if (currentTimeout) {
+      clearTimeout(currentTimeout);
+      currentTimeout = null;
     }
     if (evt.which === 32) {
       if (evt.ctrlKey && completions) {
         showNextCompletion();
         return;
       }
-      var ct = getCurrentTrigram();
-      if (ct === '') {
-        return;
-      }
-      $('#spinner').show()
-      currentReq = $.get('/complete',
-            {'sources': getSourcesList(), 'context': ct},
-            function(data) {
-        currentReq = null;
-        $('#spinner').hide()
-        if (data.length === 0) {
+      setTimeout(function() {
+        var ct = getCurrentTrigram();
+        if (ct === '') {
           return;
         }
-        completions = data;
-        completionIndex = 0;
-        showNextCompletion();
-      });
+        $('#spinner').show()
+        currentReq = $.get('/complete',
+              {'sources': getSourcesList(), 'context': ct},
+              function(data) {
+          currentReq = null;
+          $('#spinner').hide()
+          if (data.length === 0) {
+            return;
+          }
+          completions = data;
+          completionIndex = 0;
+          showNextCompletion();
+        });
+      }, 500);
     }
   });
   $('#sources li').each(function() {

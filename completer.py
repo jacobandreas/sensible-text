@@ -91,12 +91,15 @@ class Completer:
       'stranger': StrangerCompleter(),
     }
     self.stranger_completer = self.completers['stranger']
+    self.default_completer = self.completers['stranger']
 
   def complete(self, sources, context):
     completions = []
     for source in sources:
       if source in self.completers:
         completions += self.completers[source].complete(context)
+    if len(completions) == 0:
+      completions += self.default_completer.complete(context)
     self.stranger_completer.update(context)
     random.shuffle(completions)
     return completions

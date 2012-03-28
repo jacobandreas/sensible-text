@@ -40,9 +40,17 @@ body {
 #sources {
   cursor: pointer;
 }
+#sources li .plus {
+  color: transparent;
+}
 
 #sources li.selected {
   font-weight: bold;
+  color: #ccc;
+  text-shadow: 0 0 3px rgba(200,200,200,0.5);
+}
+
+#sources li.selected .plus {
   color: #ccc;
 }
 
