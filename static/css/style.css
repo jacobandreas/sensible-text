@@ -49,3 +49,21 @@ body {
 input[type=checkbox] {
   background: #f00;
 }
+
+#attribution {
+  width: 30em;
+  padding: 2em;
+  margin: 0 auto;
+  color: #667;
+  text-align: right;
+}
+
+#attribution p {
+  font-size: .8em;
+}
+
+#attribution p a {
+  color: #889;
+  text-decoration: none;
+  border-bottom: 1px solid #445;
+}
