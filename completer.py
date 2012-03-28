@@ -40,7 +40,9 @@ class AustenCompleter:
     austen_toks_nopunct = [tok for tok in austen_toks if not
         self.punctuation(tok)]
     # TODO logging?
-    self.model = nltk.model.NgramModel(self.MODEL_ORDER, austen_toks_nopunct)
+    estimator = lambda fdist, bins: nltk.probability.LidstoneProbDist(fdist, 0.2)
+    self.model = nltk.model.NgramModel(self.MODEL_ORDER, austen_toks_nopunct,
+        estimator)
 
   def punctuation(self, token):
     return token in ('.', ',', '?', '!', ';', ':', "''", "``", "'")
