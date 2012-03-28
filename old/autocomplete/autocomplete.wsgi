@@ -41,15 +41,19 @@ def complete_austen(context):
     completions.append(' '.join(suggestion[len(context):]))
   return completions
 
-#brown_toks = nltk.corpus.brown.words()
-#brown_ngram = nltk.model.NgramModel(3, brown_toks)
-#print('finished loading brown')
-#def complete_brown(context):
-#  completions = []
-#  for i in range(3):
-#    suggestion = brown_ngram.generate(1, context)
-#    completions.append(' '.join(suggestion[len(context):]))
-#  return completions
+#joyce_file = open('/home/jacob/public_html/autocomplete.jacobandreas.net/autocomplete/joyce.txt')
+joyce_file = open('joyce.txt')
+joyce_lines = '\n'.join(joyce_file.readlines())
+joyce_file.close()
+joyce_toks = nltk.word_tokenize(joyce_lines)
+joyce_ngram = nltk.model.NgramModel(3, joyce_toks)
+print('finished loading joyce.txt')
+def complete_joyce(context):
+  completions = []
+  for i in range(3):
+    suggestion = joyce_ngram.generate(1, context)
+    completions.append(' '.join(suggestion[len(context):]))
+  return completions
 
 PARSELY_URL = 'http://simon.parsely.com:8983/solr/goldindex2/select/?wt=json&q=%s'
 def complete_parsely(context):
@@ -92,8 +96,8 @@ def complete():
   if 'austen' in sources:
     completions += complete_austen(context)
 
-  #if 'brown' in sources:
-  #  completions += complete_brown(context)
+  if 'joyce' in sources:
+    completions += complete_joyce(context)
 
   if 'parsely' in sources:
     completions += complete_parsely(context)
