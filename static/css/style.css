@@ -1,0 +1,51 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: #223;
+  font-family: 'Pontano Sans', sans-serif;
+  color: #ccc;
+}
+
+#text {
+  background: #28283f;
+  margin: 0 auto;
+  width: 30em;
+  padding: 5em 2em;
+  outline: 0px solid;
+}
+
+#sources {
+  width: 7em;
+  margin: 0 auto;
+  height: 0;
+  position: relative;
+  left: -20em;
+  top: 5em;
+  list-style-type: none;
+  color: #889;
+}
+
+#spinner {
+  width: 7em;
+  margin: 0 auto;
+  height: 0;
+  position: relative;
+  left: 20em;
+  top: 6em;
+}
+
+#sources {
+  cursor: pointer;
+}
+
+#sources li.selected {
+  font-weight: bold;
+  color: #ccc;
+}
+
+input[type=checkbox] {
+  background: #f00;
+}
