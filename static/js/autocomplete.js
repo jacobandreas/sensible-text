@@ -95,7 +95,7 @@ function setupEvents() {
           }
           completions = data;
           completionIndex = 0;
-          showNextCompletion();
+          //showNextCompletion();
         });
       }, 500);
     }
